@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 let JWT_SECRET = process.env.JWT_SECRET;
 
-// generating the token
+// function for generating the token
 function generateToken(userId) {
     let token = jwt.sign({
         userId: userId
@@ -14,7 +14,7 @@ function generateToken(userId) {
     return token;
 }                           
 
-// registering the user
+// API for registering the user
 export let registerUser = async (req, res) => {
     // first defining the format of everything which is required
     let requiredBody = z.object({

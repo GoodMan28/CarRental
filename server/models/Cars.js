@@ -13,7 +13,7 @@ let carSchema = new mongoose.Schema({
     pricePerDay: {type: Number, required: true},
     location: {type: String, required: true},
     description: {type: String, required: true},
-    isAvailable: {type: Boolean, required: true},
+    isAvailable: {type: Boolean, required: true, default: true},
 });
 
 // making the model from the schema and exporting it

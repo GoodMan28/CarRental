@@ -15,7 +15,7 @@ export let protect = async (req, res, next) => {
         let decodedPayload = jwt.verify(token, JWT_SECRET);
         let userId = decodedPayload.userId;
         // converting this userId to the _id since we have converted it to the string
-        let objId = new mongoose.Schema.Types.ObjectId(userId);
+        let objId = new mongoose.Types.ObjectId(userId);
 
         // now we will find the user with the _id (and this will be in the same try as the error before will not lead this statement to execute)
         let user = await User.findById(objId).select("-password")
