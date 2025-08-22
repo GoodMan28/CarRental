@@ -1,3 +1,4 @@
 node_modules/
 .env
-*.cpp
+*.cpp 
+# all cpp files
