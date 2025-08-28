@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 let {ObjectId} = mongoose.Schema.Types
 let carSchema = new mongoose.Schema({
-    ownerId: {type: ObjectId, required: true},
+    ownerId: {type: ObjectId, required: false},
     brand: {type: String, required: true},
     model: {type: String, required: true},
     image: {type: String, required: true},
