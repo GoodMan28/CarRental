@@ -6,7 +6,7 @@ let bookingSchema = new mongoose.Schema({
     car: {type: ObjectId, ref: "Car", required: true},
     pickupDate: {type: Date, required: true},
     returnDate: {type: Date, required: true},
-    status: {type: String, enum: ["pending", "confirmed", "cancelled", "completed"], default: "pending"},
+    status: {type: String, enum: ["pending", "confirmed", "cancelled"], default: "pending"},
     price: {type: Number, required: true}
 }, {timestamps: true});
 

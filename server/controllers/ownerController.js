@@ -4,12 +4,13 @@ import imagekit from "../configs/imageKit.js";
 import { response } from "express";
 import Car from "../models/Cars.js";
 import mongoose from "mongoose";
+import Booking from "../models/Bookings.js";
 
 
 // API to change the role to owner
 export let changeToOwner = async (req, res) => {
     try{
-        let {_id} = req.user; // here we will get the _id from the protect middleware
+        let {_id, role} = req.user; // here we will get the _id from the protect middleware
         await User.findByIdAndUpdate(_id, {
             role: "owner"
         })
@@ -30,7 +31,13 @@ export let changeToOwner = async (req, res) => {
 // API to list the cars
 export let listCar = async (req, res) => {
     try {
-        let {_id} = req.user; // given by the protect middleware
+        let {_id, role} = req.user; // given by the protect middleware
+        if(role !== "owner") {
+            res.json({
+                "success": true,
+                "msg": "Unauthorized"
+            })
+        }
         let car = JSON.parse(req.body.carData); // we will pass the car data in the form (and in form we can either provide the text data or file so parsing it to json)
         let imageFile = req.file; // this is given by the multer middleware
         let fileBuffer = fs.readFileSync(imageFile.path); // the path property is given by the multer middleware
@@ -75,7 +82,13 @@ export let listCar = async (req, res) => {
 // API to give the list of all cars listed by the ownwer
 export let allCar = async (req, res) => {
     try {
-        let {_id} = req.user;
+        let {_id, role} = req.user;
+        if(role !== "owner") {
+            res.json({
+                "success": true,
+                "msg": "Unauthorized"
+            })
+        }
         let cars = await Car.find({ownerId: _id}).lean();
 
         if(!cars) {
@@ -102,8 +115,14 @@ export let allCar = async (req, res) => {
 // API to toggle car availibility
 export let toggleAvail = async (req, res) => {
     try {
-        let {_id} = req.user;
+        let {_id, role} = req.user;
         // we will provide the car id of the car whoose availibility to be changed in the body
+        if(role !== "owner") {
+            res.json({
+                "success": true,
+                "msg": "Unauthorized"
+            })
+        }
         let {carId} = req.body;
         let carObjid = new mongoose.Types.ObjectId(carId);
         let car = await Car.findById(carObjid);
@@ -143,8 +162,14 @@ export let toggleAvail = async (req, res) => {
 // v2 => also add a select option where we can perform the same operations on multiple cars
 export let deleteCar = async (req, res) => {
     try {
-        let {_id} = req.user;
+        let {_id, role} = req.user;
         // we will provide the car id of the car whoose availibility to be changed in the body
+        if(role !== "owner") {
+            res.json({
+                "success": true,
+                "msg": "Unauthorized"
+            })
+        }
         let {carId} = req.body;
         let carObjid = new mongoose.Types.ObjectId(carId);
         let car = await Car.findById(carObjid);
@@ -192,8 +217,31 @@ export let getDashboardData = async (req, res) => {
             })
         }
 
-        let cars = Car.find({ownerId: _id});
-        // later we will also display the bookings data
+        let cars = await Car.find({ownerId: _id}).lean();
+        let bookings = await Booking.find({ownerId: _id});
+        
+        let confirmedBookings = await Booking.find({ownerId: _id, status: "confirmed"}).lean();
+        let pendingBookings = await Booking.find({ownerId: _id, status: "pending"}).lean();
+        let cancelledBookings = await Booking.find({ownerId: _id, status: "cancelled"}).lean();
+
+        let monthlyRevenue = 0;
+        for(i = 0; i < confirmedBookings.length; i++) {
+            monthlyRevenue += confirmedBookings[i];
+        }
+        let dashboard = {
+            totalCars: cars.length,
+            totalBookings: bookings.length,
+            confirmedBookings: confirmedBookings.length,
+            pendingBookings: pendingBookings.length,
+            cancelledBookings: cancelledBookings.length,
+            monthlyRevenue
+        };
+
+        res.json({
+            "success": true,
+            "msg": "dashboard",
+            dashboard
+        })
     }
     catch(err) {
         res.json({
@@ -203,7 +251,52 @@ export let getDashboardData = async (req, res) => {
     }
 }
 
+// API to add the profile picture
+export let updatePhoto = async (req, res) => {
+    try {
+        let {_id, role} = req.user;
+        let user = await User.findById(_id);
+        if(role !== "owner") {
+            res.status(403).send({
+                "success": false,
+                "msg": "unauthorized"
+            })
+        }
+        
 
+        let imageFile = req.file;
+        let fileBuffer = fs.readFileSync(imageFile.path);
+
+        let response = await imagekit.upload({
+            file: fileBuffer,
+            fileName: imageFile.originalname,
+            folder: "/cars"
+        })
+        
+        let optimizedImageURL = imagekit.url({
+            path : response.filePath,
+            transformation : [
+                {width: "400"}, // width resizing
+                {quality: "auto"}, // Auto compression
+                {format: "webp"}  // changing the format
+            ]
+        });
+
+        user.image = optimizedImageURL;
+        user.save();
+
+        res.json({
+            "success": true,
+            "msg": "DP updated"
+        })
+    }
+    catch(err) {
+        res.json({
+            "success": false,
+            "msg": err.message
+        })
+    }
+}
 
 
 

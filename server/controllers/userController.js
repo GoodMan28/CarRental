@@ -47,7 +47,7 @@ export let registerUser = async (req, res) => {
         catch (err) {
             res.status(402).json({
                 success: false,
-                msg: "User Already exists"
+                msg: err.message
             })
         }
     }
