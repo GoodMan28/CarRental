@@ -54,7 +54,7 @@ export let registerUser = async (req, res) => {
     else {
         res.status(404).json({
             success: false,
-            msg: parsedResult.error
+            msg: parsedResult.error.message
         })
     }
 }
