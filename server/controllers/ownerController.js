@@ -146,7 +146,7 @@ export let toggleAvail = async (req, res) => {
         await Car.findByIdAndUpdate(carObjid, {isAvailable: !car.isAvailable}); // since the isAvailbale is of the old document
         res.json({
             "success": true,
-            msg: "availibility changed"
+            "msg": "availibility changed"
         })
     }
     catch(err) {
@@ -283,7 +283,7 @@ export let updatePhoto = async (req, res) => {
         });
 
         user.image = optimizedImageURL;
-        user.save();
+        await user.save();
 
         res.json({
             "success": true,
@@ -300,7 +300,7 @@ export let updatePhoto = async (req, res) => {
 
 
 
-
+// Provided by the multer middleware: req.file
 // {
 //   fieldname: 'image',
 //   originalname: 'car.jpg',

@@ -54,14 +54,14 @@ export let checkAvailibilityLocation = async (req, res) => {
 
 // API to create booking
 export let createBooking = async (req, res) => {
-    // https://gist.github.com/GoodMan28/54a2bb29f95f93866f615c64da199aa1
+    // https://gist.github.com/GoodMan28/54a2bb29f95f93866f615c64da199aa1   Alternate code
     try {
         let { car, pickupDate, returnDate } = req.body;
         let isAvailable = checkAvailibility(car, pickupDate, returnDate);
         let { _id } = req.user; // userId from the middleware
         if (!isAvailable) {
             res.json({
-                "success": true,
+                "success": false,
                 "msg": "Car not available"
             });
         }
