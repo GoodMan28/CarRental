@@ -17,6 +17,6 @@ let carSchema = new mongoose.Schema({
 });
 
 // making the model from the schema and exporting it
-let Car = new mongoose.model("car", carSchema);
+let Car = new mongoose.model("Car", carSchema);
 
 export default Car;

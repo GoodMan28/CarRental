@@ -18,9 +18,9 @@ const ManageBookings = () => {
     }
   }
 
-  const changeBookingStatus = async (bookingId, status)=>{
+  const changeBookingStatus = async (bookingId, newStatusValue)=>{
     try {
-      const { data } = await axios.post('/api/v1/booking/changeStatus', {bookingId, status})
+      const { data } = await axios.post('/api/v1/booking/changeStatus', {bookingId, newStatus: newStatusValue})
       if(data.success){
         toast.success(data.msg)
         fetchOwnerBookings()

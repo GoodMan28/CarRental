@@ -2,6 +2,7 @@ import { Stats } from "fs";
 import Booking from "../models/Bookings.js"
 import Car from "../models/Cars.js";
 import mongoose from "mongoose";
+import { log } from "console";
 
 // function to check the availibility of a car at a given date
 export let checkAvailibility = async (car, pickupDate, returnDate) => {
@@ -115,7 +116,8 @@ export let createBooking = async (req, res) => {
         msg: "Car not available"
       });
     }
-    const car_id = new mongoose.Types.ObjectId(validIdString);
+    const car_id = new mongoose.Types.ObjectId(car);
+
     const carDetails = await Car.findById(car_id);
     if (!carDetails) {
       return res.json({
@@ -123,8 +125,9 @@ export let createBooking = async (req, res) => {
         msg: "Car not found"
       });
     }
-
-    const ownerId = carDetails.owner;
+    console.log(carDetails);
+    
+    const ownerId = carDetails.ownerId;
     if (!ownerId) {
       return res.json({
         success: false,

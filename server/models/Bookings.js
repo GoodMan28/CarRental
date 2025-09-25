@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 let {ObjectId} = mongoose.Schema.Types
 let bookingSchema = new mongoose.Schema({
-    owner: {type: ObjectId, ref: "Owner", required: true},
+    owner: {type: ObjectId, ref: "User", required: true},
     user: {type: ObjectId, ref: "User", required: true},
     car: {type: ObjectId, ref: "Car", required: true},
     pickupDate: {type: Date, required: true},
