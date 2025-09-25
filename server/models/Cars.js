@@ -9,7 +9,7 @@ let carSchema = new mongoose.Schema({
     category: {type: String, required: true},
     seatingCapacity: {type: Number, required: true},
     fuelType: {type: String, required: true},
-    transmission: {type: String, required: true, enum: ["MT", "AMT", "SMT", "CVT", "HYBRID"]},
+    transmission: {type: String, required: true, enum: ["MT", "AMT", "SMT", "CVT", "HYBRID", ""]},
     pricePerDay: {type: Number, required: true},
     location: {type: String, required: true},
     description: {type: String, required: true},

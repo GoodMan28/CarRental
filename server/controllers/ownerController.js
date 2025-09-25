@@ -225,7 +225,7 @@ export let getDashboardData = async (req, res) => {
         let cancelledBookings = await Booking.find({ownerId: _id, status: "cancelled"}).lean();
 
         let monthlyRevenue = 0;
-        for(i = 0; i < confirmedBookings.length; i++) {
+        for(let i = 0; i < confirmedBookings.length; i++) {
             monthlyRevenue += confirmedBookings[i];
         }
         let dashboard = {

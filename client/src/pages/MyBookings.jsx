@@ -13,11 +13,11 @@ const MyBookings = () => {
 
   const fetchMyBookings = async ()=>{
     try {
-      const { data } = await axios.get('/api/bookings/user')
+      const { data } = await axios.get('/api/booking/user')
       if (data.success){
         setBookings(data.bookings)
       }else{
-        toast.error(data.message)
+        toast.error(data.msg)
       }
     } catch (error) {
       toast.error(error.message)

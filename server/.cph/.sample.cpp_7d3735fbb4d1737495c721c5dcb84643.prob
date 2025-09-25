@@ -1,1 +1,0 @@
-{"name":"Local: sample","url":"/home/sklab10112/DriveShare/server/sample.cpp","tests":[{"id":1756027972486,"input":"","output":"1 4 3 5 \n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/sklab10112/DriveShare/server/sample.cpp","group":"local","local":true}

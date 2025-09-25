@@ -1,7 +1,7 @@
 import express from "express"
 
 // importing the controllers which will be the main component of the end points
-import { loginUser, registerUser, getUserData } from "../controllers/userController.js";
+import { loginUser, registerUser, getUserData, getCars } from "../controllers/userController.js";
 import { protect } from "../middlewares/auth.js";
 
 // using the router where we will attach the middlewares and the end points
@@ -15,6 +15,7 @@ userRouter.use(express.json());
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
 userRouter.get("/data", protect, getUserData);
+userRouter.get('/cars', getCars)
 userRouter.get("/", (req, res) => {
     res.json({
         msg: "Route is okay"

@@ -12,11 +12,11 @@ const ManageCars = () => {
 
   const fetchOwnerCars = async ()=>{
     try {
-      const {data} = await axios.get('/api/owner/cars')
+      const {data} = await axios.post('/api/v1/owner/allCar')
       if(data.success){
         setCars(data.cars)
       }else{
-        toast.error(data.message)
+        toast.error(data.msg)
       }
     } catch (error) {
       toast.error(error.message)
@@ -25,12 +25,12 @@ const ManageCars = () => {
 
   const toggleAvailability = async (carId)=>{
     try {
-      const {data} = await axios.post('/api/owner/toggle-car', {carId})
+      const {data} = await axios.post('/api/v1/owner/toggleAvailibility', {carId})
       if(data.success){
-        toast.success(data.message)
+        toast.success(data.msg)
         fetchOwnerCars()
       }else{
-        toast.error(data.message)
+        toast.error(data.msg)
       }
     } catch (error) {
       toast.error(error.message)
@@ -44,9 +44,9 @@ const ManageCars = () => {
 
       if(!confirm) return null
 
-      const {data} = await axios.post('/api/owner/delete-car', {carId})
+      const {data} = await axios.post('/api/v1/owner/deleteCar', {carId})
       if(data.success){
-        toast.success(data.message)
+        toast.success(data.msg)
         fetchOwnerCars()
       }else{
         toast.error(data.message)
@@ -85,7 +85,7 @@ const ManageCars = () => {
                   <img src={car.image} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
                   <div className='max-md:hidden'>
                     <p className='font-medium'>{car.brand} {car.model}</p>
-                    <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
+                    <p className='text-xs text-gray-500'>{car.seatingCapacity} • {car.transmission}</p>
                   </div>
                 </td>
 
@@ -94,13 +94,13 @@ const ManageCars = () => {
 
                 <td className='p-3 max-md:hidden'>
                   <span className={`px-3 py-1 rounded-full text-xs ${car.isAvaliable ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}`}>
-                    {car.isAvaliable ? "Available" : "Unavailable" }
+                    {car.isAvailable ? "Available" : "Unavailable" }
                   </span>
                 </td>
 
                 <td className='flex items-center p-3'>
 
-                  <img onClick={()=> toggleAvailability(car._id)} src={car.isAvaliable ? assets.eye_close_icon : assets.eye_icon} alt="" className='cursor-pointer'/>
+                  <img onClick={()=> toggleAvailability(car._id)} src={car.isAvailable ? assets.eye_close_icon : assets.eye_icon} alt="" className='cursor-pointer'/>
 
                   <img onClick={()=> deleteCar(car._id)} src={assets.delete_icon} alt="" className='cursor-pointer'/>
                 </td>

@@ -1,6 +1,7 @@
 import { Stats } from "fs";
 import Booking from "../models/Bookings.js"
 import Car from "../models/Cars.js";
+import mongoose from "mongoose";
 
 // function to check the availibility of a car at a given date
 export let checkAvailibility = async (car, pickupDate, returnDate) => {
@@ -53,53 +54,114 @@ export let checkAvailibilityLocation = async (req, res) => {
 }
 
 // API to create booking
+// export let createBooking = async (req, res) => {
+//     // https://gist.github.com/GoodMan28/54a2bb29f95f93866f615c64da199aa1   Alternate code
+//     try {
+//         let { car, pickupDate, returnDate } = req.body;
+//         let isAvailable = checkAvailibility(car, pickupDate, returnDate);
+//         let { _id } = req.user; // userId from the middleware
+//         if (!isAvailable) {
+//             res.json({
+//                 "success": false,
+//                 "msg": "Car not available"
+//             });
+//         }
+
+//         let carDetails = await Car.findById(car);
+//         let ownerId = carDetails.owner;
+//         if (!ownerId) {
+//             res.json({ 
+//                 "success": false, 
+//                 "msg": "Car doesn't has anyone" 
+//             });
+//         }
+//         let picked = new Date(pickupDate);
+//         let returned = new Date(returnDate);
+//         let days = Math.ceil((returned - picked) / (60 * 60 * 24 * 1000));
+//         let price = Math.ceil(days * carDetails.pricePerDay);
+
+//         Booking.create({
+//             owner: ownerId,
+//             user: _id,
+//             car: car,
+//             pickupDate: pickupDate,
+//             returnDate: returnDate,
+//             price: price
+//         })
+
+//         res.json({ 
+//             "success": true, 
+//             "msg": "Booking created" 
+//         });
+//     }
+//     catch (err) {
+//         res.json({ 
+//             "success": false, 
+//             "msg": err.message 
+//         });
+//     }
+// }
+
 export let createBooking = async (req, res) => {
-    // https://gist.github.com/GoodMan28/54a2bb29f95f93866f615c64da199aa1   Alternate code
-    try {
-        let { car, pickupDate, returnDate } = req.body;
-        let isAvailable = checkAvailibility(car, pickupDate, returnDate);
-        let { _id } = req.user; // userId from the middleware
-        if (!isAvailable) {
-            res.json({
-                "success": false,
-                "msg": "Car not available"
-            });
-        }
+  try {
+    const { car, pickupDate, returnDate } = req.body;
+    const userId = req.user._id; // from middleware
 
-        let carDetails = await Car.findById(car);
-        let ownerId = carDetails.owner;
-        if (!ownerId) {
-            res.json({ 
-                "success": false, 
-                "msg": "Car doesn't has anyone" 
-            });
-        }
-        let picked = new Date(pickupDate);
-        let returned = new Date(returnDate);
-        let days = Math.ceil((returned - picked) / (60 * 60 * 24 * 1000));
-        let price = Math.ceil(days * carDetails.pricePerDay);
-
-        Booking.create({
-            owner: ownerId,
-            user: _id,
-            car: car,
-            pickupDate: pickupDate,
-            returnDate: returnDate,
-            price: price
-        })
-
-        res.json({ 
-            "success": true, 
-            "msg": "Booking created" 
-        });
+    // check availability properly
+    const isAvailable = await checkAvailibility(car, pickupDate, returnDate);
+    if (!isAvailable) {
+      return res.json({
+        success: false,
+        msg: "Car not available"
+      });
     }
-    catch (err) {
-        res.json({ 
-            "success": false, 
-            "msg": err.message 
-        });
+    const car_id = new mongoose.Types.ObjectId(validIdString);
+    const carDetails = await Car.findById(car_id);
+    if (!carDetails) {
+      return res.json({
+        success: false,
+        msg: "Car not found"
+      });
     }
-}
+
+    const ownerId = carDetails.owner;
+    if (!ownerId) {
+      return res.json({
+        success: false,
+        msg: "Car has no assigned owner"
+      });
+    }
+
+    // calculate days & price
+    const picked = new Date(pickupDate);
+    const returned = new Date(returnDate);
+    const days = Math.ceil((returned - picked) / (1000 * 60 * 60 * 24));
+    const price = days * carDetails.pricePerDay;
+
+    // ✅ await the create call
+    const booking = await Booking.create({
+      owner: ownerId,
+      user: userId,
+      car,
+      pickupDate,
+      returnDate,
+      price
+    });
+
+    return res.json({
+      success: true,
+      msg: "Booking created",
+      booking
+    });
+  } catch (err) {
+    console.error("Booking error:", err);
+    return res.status(500).json({
+      success: false,
+      msg: err.message
+    });
+  }
+};
+
 
 // API to list all the bookings by the user
 export let getUserBookings = async (req, res) => {

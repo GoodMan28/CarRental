@@ -1,6 +1,7 @@
 // here we will define the sign up and the sign in logic(functions)
 import { email, safeParse, success, z } from "zod"
 import User from "../models/User.js";
+import Car from "../models/Cars.js"
 import { fa } from "zod/v4/locales";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
@@ -38,7 +39,7 @@ export let registerUser = async (req, res) => {
 
             // simultaneously generating the tokens
             let token = generateToken(user._id.toString());
-            res.json({
+            return res.json({
                 success: true,
                 token,
                 msg: "User is signed up"
@@ -47,7 +48,7 @@ export let registerUser = async (req, res) => {
         catch (err) {
             res.status(402).json({
                 success: false,
-                msg: err.message
+                msg: "User Already Exists"
             })
         }
     }
@@ -77,13 +78,13 @@ export let loginUser = async (req, res) => {
         if(!isMatch) {
             res.status(404).json({
                 success: false,
-                msg: "Incorrect password"
+                msg: "Invalid Credentials"
             })
         }
         // now we will generate the token
         let token = generateToken(user._id.toString());
 
-        res.json({
+        return res.json({
             success: true,
             msg: "User is signed in",
             token
@@ -105,15 +106,26 @@ export let loginUser = async (req, res) => {
 export let getUserData = async (req, res) => {
     try {
         let user = req.user;
-        res.json({
+        return res.json({
             success: true,
             user
         })
     }
     catch(err) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             msg: err.message
         })
+    }
+}
+
+// Get All Cars for the Frontend
+export const getCars = async (req, res) =>{
+    try {
+        const cars = await Car.find({isAvailable: true})
+        return res.json({success: true, cars})
+    } catch (error) {
+        console.log(error.message);
+        return res.json({success: false, msg: error.message})
     }
 }

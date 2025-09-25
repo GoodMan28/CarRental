@@ -9,12 +9,9 @@ import bookingRouter from "./routes/bookingRoutes.js";
 
 // Initialize express app
 let app = express();
-
-// connect DB
+app.use(cors())
 await connectDB()
 
-// Middleware
-app.use(cors());
 app.use(express.json());
 
 // Adding the user routes
