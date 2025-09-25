@@ -42,13 +42,7 @@ The application is designed to be robust and secure, with a clear separation of 
 - Endpoints for owners to manage their car bookings  
 - Change booking status (pending, confirmed, cancelled)  
 
----
 
-## Setup & Installation
-
-### Prerequisites
-- Node.js (v14 or higher)  
-- MongoDB (local or cloud-based)  
 
 
 
